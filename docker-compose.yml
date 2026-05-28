@@ -26,6 +26,11 @@ services:
     env_file: .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.prod
+      DATABASE_URL: postgres://postgres:postgres@db:5432/marketplace
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CELERY_TASK_ALWAYS_EAGER: "0"
     volumes:
       - media_data:/app/media
       - static_data:/app/staticfiles
@@ -42,6 +47,11 @@ services:
     env_file: .env
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.prod
+      DATABASE_URL: postgres://postgres:postgres@db:5432/marketplace
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CELERY_TASK_ALWAYS_EAGER: "0"
       RUN_MIGRATIONS: "0"
       RUN_COLLECTSTATIC: "0"
     command: celery -A config worker -l info

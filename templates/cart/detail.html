@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Кошик · Handmade{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">🛒 Кошик</h2>
+
+{% if items %}
+    <table class="table align-middle">
+        <thead>
+            <tr><th>Товар</th><th>Майстер</th><th>Ціна</th><th>Кількість</th><th>Сума</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+                <tr>
+                    <td>
+                        <a href="{{ item.product.get_absolute_url }}">{{ item.product.title }}</a>
+                    </td>
+                    <td><a href="{% url 'accounts:master_detail' item.product.owner.pk %}">{{ item.product.owner.display_name }}</a></td>
+                    <td>{{ item.product.price }} ₴</td>
+                    <td>
+                        <form method="post" action="{% url 'cart:update' item.product.pk %}" class="d-flex">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control" style="width:80px">
+                            <button class="btn btn-sm btn-outline-secondary ms-2">↻</button>
+                        </form>
+                    </td>
+                    <td class="fw-bold">{{ item.subtotal }} ₴</td>
+                    <td>
+                        <form method="post" action="{% url 'cart:remove' item.product.pk %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-danger">×</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr><th colspan="4" class="text-end">Разом:</th><th colspan="2">{{ cart.total }} ₴</th></tr>
+        </tfoot>
+    </table>
+
+    <div class="d-flex justify-content-between mt-4">
+        <form method="post" action="{% url 'cart:clear' %}">
+            {% csrf_token %}
+            <button class="btn btn-outline-secondary">Очистити кошик</button>
+        </form>
+        <a href="{% url 'orders:checkout' %}" class="btn btn-success btn-lg">Оформити замовлення →</a>
+    </div>
+{% else %}
+    <div class="alert alert-info">Кошик порожній. <a href="{% url 'catalog:product_list' %}">Перейти до каталогу</a>.</div>
+{% endif %}
+{% endblock %}

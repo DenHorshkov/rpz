@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Профіль · {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4 text-center">
+        {% if master and master.avatar %}
+            <img src="{{ master.avatar.url }}" class="master-avatar mb-3" alt="avatar">
+        {% else %}
+            <div class="master-avatar mb-3 bg-secondary d-inline-flex align-items-center justify-content-center text-white fs-1">
+                {{ user.username|first|upper }}
+            </div>
+        {% endif %}
+        <h4>{{ user.get_full_name|default:user.username }}</h4>
+        <p class="text-muted">{{ user.email }}</p>
+    </div>
+    <div class="col-md-8">
+        {% if master %}
+            <h3>{{ master.display_name }}</h3>
+            <p class="text-muted">Майстер · {{ master.city|default:"місто не вказано" }}</p>
+            <p>{{ master.bio|linebreaksbr }}</p>
+            {% if master.average_rating %}
+                <p class="rating-stars">★ {{ master.average_rating|floatformat:1 }} <span class="text-muted">({{ master.review_count }} відг.)</span></p>
+            {% endif %}
+            <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-primary">Редагувати профіль</a>
+            <a href="{% url 'catalog:my_products' %}" class="btn btn-primary">Мої товари</a>
+        {% else %}
+            <div class="alert alert-info">
+                Ви ще не майстер. Щоб публікувати товари, створіть профіль майстра.
+            </div>
+            <a href="{% url 'accounts:become_master' %}" class="btn btn-success">Стати майстром</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

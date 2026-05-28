@@ -1,0 +1,10 @@
+[
+  {"model": "catalog.category", "pk": 1, "fields": {"name": "Прикраси", "slug": "prykrasy"}},
+  {"model": "catalog.category", "pk": 2, "fields": {"name": "Кераміка", "slug": "keramika"}},
+  {"model": "catalog.category", "pk": 3, "fields": {"name": "Одяг", "slug": "odyah"}},
+  {"model": "catalog.category", "pk": 4, "fields": {"name": "Іграшки", "slug": "ihrashky"}},
+  {"model": "catalog.category", "pk": 5, "fields": {"name": "Аксесуари", "slug": "aksesuary"}},
+  {"model": "catalog.category", "pk": 6, "fields": {"name": "Декор", "slug": "dekor"}},
+  {"model": "catalog.category", "pk": 7, "fields": {"name": "Косметика", "slug": "kosmetyka"}},
+  {"model": "catalog.category", "pk": 8, "fields": {"name": "Подарунки", "slug": "podarunky"}}
+]

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Мої замовлення{% endblock %}
+
+{% block content %}
+<h2 class="mb-3">Мої замовлення</h2>
+<table class="table">
+    <thead><tr><th>#</th><th>Дата</th><th>Сума</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+        {% for order in orders %}
+            <tr>
+                <td>#{{ order.pk }}</td>
+                <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                <td>{{ order.total }} ₴</td>
+                <td>
+                    <span class="badge bg-{% if order.status == 'paid' %}success{% elif order.status == 'pending' %}warning text-dark{% else %}secondary{% endif %}">{{ order.get_status_display }}</span>
+                </td>
+                <td><a href="{{ order.get_absolute_url }}" class="btn btn-sm btn-outline-primary">Відкрити</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-muted text-center">Замовлень ще немає.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

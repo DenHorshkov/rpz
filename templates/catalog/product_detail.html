@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.title }} · Handmade{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        {% if product.images.all %}
+            <div id="prodCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    {% for img in product.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <img src="{{ img.image.url }}" class="d-block w-100 rounded" alt="{{ img.alt_text }}">
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if product.images.count > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#prodCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon"></span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#prodCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                    </button>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="bg-light p-5 text-center text-muted rounded">Без фото</div>
+        {% endif %}
+    </div>
+    <div class="col-md-6">
+        <h2>{{ product.title }}</h2>
+        <p class="text-muted">
+            <a href="{% url 'accounts:master_detail' product.owner.pk %}">{{ product.owner.display_name }}</a>
+            · {{ product.category.name }}
+        </p>
+        <h3 class="text-primary">{{ product.price }} ₴</h3>
+        <p>{{ product.description|linebreaksbr }}</p>
+        <p class="text-muted">На складі: {{ product.stock }}</p>
+
+        {% if product.stock > 0 %}
+            <form method="post" action="{% url 'cart:add' product.pk %}" class="d-flex align-items-center gap-2">
+                {% csrf_token %}
+                <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width:100px">
+                <button type="submit" class="btn btn-success">🛒 Додати в кошик</button>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">Товар тимчасово відсутній.</div>
+        {% endif %}
+
+        {% if user.is_authenticated and product.owner.user_id == user.id %}
+            <div class="mt-3">
+                <a href="{% url 'catalog:product_edit' product.slug %}" class="btn btn-outline-primary">Редагувати</a>
+                <a href="{% url 'catalog:product_delete' product.slug %}" class="btn btn-outline-danger">Видалити</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

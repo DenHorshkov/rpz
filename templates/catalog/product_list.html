@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог · Handmade Маркетплейс{% endblock %}
+
+{% block content %}
+<div class="row">
+    <aside class="col-md-3 mb-4">
+        <h5>Категорії</h5>
+        <ul class="list-group">
+            <li class="list-group-item {% if not selected_category %}active{% endif %}">
+                <a href="{% url 'catalog:product_list' %}" class="text-decoration-none {% if not selected_category %}text-white{% endif %}">Усі</a>
+            </li>
+            {% for category in categories %}
+                <li class="list-group-item {% if category.slug == selected_category %}active{% endif %}">
+                    <a href="?category={{ category.slug }}" class="text-decoration-none {% if category.slug == selected_category %}text-white{% endif %}">{{ category.name }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </aside>
+    <section class="col-md-9">
+        <form method="get" class="d-flex mb-3">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Пошук товарів…" class="form-control me-2">
+            {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+            <button class="btn btn-outline-primary">Шукати</button>
+        </form>
+
+        <div class="row g-3">
+            {% for product in products %}
+                <div class="col-md-4">
+                    <div class="card product-card h-100">
+                        {% if product.main_image %}
+                            <img src="{{ product.main_image.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height:220px;">
+                                <span class="text-muted">Без фото</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title"><a href="{{ product.get_absolute_url }}">{{ product.title }}</a></h6>
+                            <p class="text-muted small mb-1">{{ product.category.name }} · {{ product.owner.display_name }}</p>
+                            <p class="fw-bold mb-0">{{ product.price }} ₴</p>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted">Поки що тут порожньо.</p>
+            {% endfor %}
+        </div>
+
+        {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">«</a></li>
+                    {% endif %}
+                    <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}">»</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

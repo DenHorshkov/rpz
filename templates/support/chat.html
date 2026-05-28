@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Чат підтримки{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>💬 Чат підтримки</h2>
+            <form method="post" action="{% url 'support:new_session' %}">
+                {% csrf_token %}
+                <button class="btn btn-sm btn-outline-secondary">Нова сесія</button>
+            </form>
+        </div>
+
+        <div id="chatWindow" class="chat-window border rounded p-3 mb-3 bg-light">
+            {% for msg in messages %}
+                <div class="d-flex">
+                    <div class="chat-bubble {{ msg.role }}" data-id="{{ msg.id }}">
+                        {% if msg.is_pending %}<em class="text-muted">друкує…</em>{% else %}{{ msg.content|linebreaksbr }}{% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted text-center">Привіт! Я можу допомогти з пошуком товарів, оплатою, доставкою. Запитайте щось 👇</p>
+            {% endfor %}
+        </div>
+
+        <form method="post" action="{% url 'support:send' session.id %}" class="d-flex">
+            {% csrf_token %}
+            <input type="text" name="text" class="form-control me-2" placeholder="Напишіть повідомлення…" autofocus required>
+            <button class="btn btn-primary">→</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    const chatWindow = document.getElementById("chatWindow");
+    const sessionId = {{ session.id }};
+    let lastId = 0;
+    document.querySelectorAll(".chat-bubble[data-id]").forEach(el => {
+        const id = parseInt(el.dataset.id, 10);
+        if (id > lastId) lastId = id;
+    });
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+
+    async function poll() {
+        try {
+            const r = await fetch(`/support/${sessionId}/poll/?after=${lastId}`);
+            if (!r.ok) return;
+            const data = await r.json();
+            let updated = false;
+            for (const m of data.messages) {
+                if (m.id <= lastId) continue;
+                lastId = m.id;
+                const wrap = document.createElement("div");
+                wrap.className = "d-flex";
+                const bub = document.createElement("div");
+                bub.className = `chat-bubble ${m.role}`;
+                bub.dataset.id = m.id;
+                bub.innerHTML = m.is_pending
+                    ? "<em class='text-muted'>друкує…</em>"
+                    : m.content.replace(/\n/g, "<br>");
+                wrap.appendChild(bub);
+                chatWindow.appendChild(wrap);
+                updated = true;
+            }
+            if (updated) chatWindow.scrollTop = chatWindow.scrollHeight;
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+    setInterval(poll, 1500);
+})();
+</script>
+{% endblock %}

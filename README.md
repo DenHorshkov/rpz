@@ -7,7 +7,7 @@
 - Python 3.11+, Django 5
 - PostgreSQL 16
 - Redis + Celery
-- Anthropic Claude API (чат-бот підтримки)
+- Groq API (чат-бот підтримки, Llama 3.3 70B)
 - Bootstrap 5 (server-side rendered templates)
 - Gunicorn + Nginx, Docker / docker-compose
 
@@ -18,7 +18,7 @@ python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 cp .env.example .env                 # Windows: copy .env.example .env
-# відредагувати .env (SECRET_KEY, ANTHROPIC_API_KEY, DATABASE_URL)
+# відредагувати .env (SECRET_KEY, GROQ_API_KEY, DATABASE_URL)
 python manage.py migrate
 python manage.py loaddata fixtures/categories.json
 python manage.py createsuperuser
@@ -54,14 +54,14 @@ pytest --cov=apps --cov-report=term-missing
 - `apps/cart/` — сесійний кошик
 - `apps/orders/` — замовлення, кнопка «Оплатити»
 - `apps/reviews/` — відгуки та агрегований рейтинг
-- `apps/support/` — чат-бот підтримки (Anthropic Claude + Celery)
+- `apps/support/` — чат-бот підтримки (Groq + Celery)
 - `templates/`, `static/`, `media/` — Django MVT файли
 - `nginx/`, `docker/` — конфіги для розгортання
 - `tests/` — pytest-django тести
 
 ## Безпека (production-ready)
 
-- `SECRET_KEY` / `DATABASE_URL` / `ANTHROPIC_API_KEY` — через `.env` (`django-environ`)
+- `SECRET_KEY` / `DATABASE_URL` / `GROQ_API_KEY` — через `.env` (`django-environ`)
 - CSRF middleware + `{% csrf_token %}` в усіх формах
 - ORM-only запити (без raw SQL) → захист від SQL-ін'єкцій
 - HTTPS-флаги вмикаються через `DJANGO_ENABLE_HTTPS=1` (HSTS, secure cookies, SSL redirect)

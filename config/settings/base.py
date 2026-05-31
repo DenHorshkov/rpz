@@ -103,5 +103,5 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
-ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
-ANTHROPIC_MODEL = env("ANTHROPIC_MODEL", default="claude-haiku-4-5-20251001")
+GROQ_API_KEY = env("GROQ_API_KEY", default="")
+GROQ_MODEL = env("GROQ_MODEL", default="llama-3.3-70b-versatile")
